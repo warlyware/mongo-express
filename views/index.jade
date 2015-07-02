@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  table.table
+    thead
+      tr
+        th HTTP verb
+        th API endpoints
+        th Description
+      tr 
+        td GET
+        td /test
+        td Just testing
+      tr 
+        td POST
+        td /test
+        td echo server time as JSON         
