@@ -5,8 +5,8 @@ var mongoose = require('mongoose');
 mongoose.connect(process.env.MONGO_URL);
 
 var Question = mongoose.model('Question', {
-  body: String,
-  email: String,
+  body: {type: String, required: true},
+  email: {type: String, required: true},
   createdAt: Date
 });
 
@@ -24,6 +24,10 @@ router.post('/questions', function(req, res) {
   var question = new Question(req.body);
   question.createdAt = new Date();
   question.save(function(err, savedQuestion) {
+    if (err) {
+      console.log(err);
+      res.status(400).json({ error: 'Validation Failed'});
+    }
     res.send(savedQuestion);
   });
 });
