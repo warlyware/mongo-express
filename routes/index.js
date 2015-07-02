@@ -11,8 +11,21 @@ var Question = mongoose.model('Question', {
 });
 
 Question.on('index', function(err) {
-  
+
 });
+
+var add500Questions = function() {
+  var fakeQuestions = [];
+  var fakeQuestion;
+  for (var i = 0; i < 500; i++) {
+    fakeQuestion = new Question({body: i, email: 'faker@gmail.com'});
+    fakeQuestion.save(function(err, savedQuestions) {
+      console.log(err, savedQuestions)
+    });
+  }
+}
+
+// add500Questions();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -28,6 +41,15 @@ router.get('/questions', function(req, res) {
     res.json(data);
   })
 });
+
+router.get('/limitquestions', function(req, res) {
+  // var limited;
+  Question.find({}).sort({ createdAt: 'desc'}).limit(20).exec(function(err, data) {
+    res.json(data);
+  });
+});
+
+
 
 router.post('/questions', function(req, res) {
   var question = new Question(req.body);
