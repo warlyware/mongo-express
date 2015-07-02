@@ -1,5 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/test');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -11,7 +14,9 @@ router.get('/test', function(req, res, next) {
 });
 
 router.post('/test', function(req, res, next) {
-  res.send('Just testing');
+  var response = req.body;  
+  response.serverTime = new Date();  //Add serverTime property to response obj
+  res.json(response);
 });
 
 module.exports = router;
