@@ -1,12 +1,18 @@
 var express = require('express');
 var router = express.Router();
+var MD5 = require('MD5');
 var mongoose = require('mongoose');
+var slug = require('slug');
 
-mongoose.connect(process.env.MONGO_URL);
+mongoose.connect('mongodb://localhost/test');
+// mongoose.connect(process.env.MONGO_URL);
+
 
 var Question = mongoose.model('Question', {
   body: {type: String, required: true, unique: true},
   email: {type: String, required: true},
+  gravUrl: {type: String, required: true},
+  slug: {type: String, required: true},
   createdAt: {type: Date, default: Date.now }
 });
 
@@ -32,6 +38,14 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Mongo API' });
 });
 
+router.get('/questions/:question', function(req, res, next) {
+  console.log('params ' + req.params.question);
+  var questionSlug = req.params.question;
+  Question.findOne({ slug: questionSlug }, function(err, data) {
+    res.json(data);
+  });
+});
+
 router.get('/test', function(req, res, next) {
   res.send('Just testing');
 });
@@ -49,17 +63,16 @@ router.get('/limitquestions', function(req, res) {
   });
 });
 
-
-
-router.post('/questions', function(req, res) {
+router.post("/questions", function(req, res) {
   var question = new Question(req.body);
-  question.createdAt = new Date();
-  console.log(req.body);
+  question.slug  = slug(req.body.body);
+  question.gravUrl = "http://www.gravatar.com/avatar/" + MD5(req.body.email);
   question.save(function(err, savedQuestion) {
     if (err) {
       console.log(err);
-      res.status(400).json({ error: 'Validation Failed'});
+      res.status(400).json({ error: "Validation Failed" });
     }
+    console.log("savedQuestion:", savedQuestion);
     res.json(savedQuestion);
   });
 });
